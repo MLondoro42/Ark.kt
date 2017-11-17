@@ -2,12 +2,6 @@
 
 An Ark-lite client written on Kotlin
 
-##Authors
-
-Miguel Londoro - miguellondoro@gmail.com
-
-Andrew Walz - andrewjwalz@gmail.com
-
 ## Requirements
 
 * Kotlin 1.1.60
@@ -228,6 +222,11 @@ manager.getTicker { ticker, error ->
 
 MIT
 
+## Authors
+
+Miguel Londoro - miguellondoro@gmail.com
+
+Andrew Walz - andrewjwalz@gmail.com
 
 ## Special Thanks
 
