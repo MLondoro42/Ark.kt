@@ -3,11 +3,13 @@
 An Ark-lite client written on Kotlin
 
 ##Authors
+
 Miguel Londoro - miguellondoro@gmail.com
 
 Andrew Walz - andrewjwalz@gmail.com
 
 ## Requirements
+
 * Kotlin 1.1.60
 
 ## Installation
@@ -40,7 +42,7 @@ All APIs are accessed using the `ApiManager`:
 val manager = ApiManager()
 ```
 
-#### Account
+### Account
 
 **Fetch Account:**
 
@@ -75,7 +77,7 @@ manager.getVote("Adu61K21jCvCyRcTNcUJHoYLUFpLfNX1vS") { delegate, error ->
 }
 ```
 
-###Blocks
+### Blocks
 
 **Fetch Block**:
 
@@ -141,7 +143,7 @@ manager.getVoters(_DELEGATE_PUBLIC_KEY_)  { voters, error ->
 }
 ```
 
-###Transactions
+### Transactions
 
 **Fetch Transaction**
 
@@ -188,7 +190,7 @@ manager.sendVote(_DELEGATE_, passphrase: _MY_SECRET_PASSPHRASE_, secondPassphras
 manager.sendUnvote(_DELEGATE_, passphrase: _MY_SECRET_PASSPHRASE_, secondPassphrase: _MY_SECOND_SECRET_PASSPHRASE_)
 ```
 
-###Ticker
+### Ticker
 
 **Fetch Ticker**:
 
@@ -228,4 +230,6 @@ MIT
 
 
 ## Special Thanks
+
+* ARK Community Fund
 
