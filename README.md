@@ -218,6 +218,14 @@ manager.getTicker { ticker, error ->
 }
 ```
 
+## Todo
+
+- [X] ARK API endpoints to support Monitor app
+- [X] Ark Ticker support
+- [X] Transaction, vote, unvote creation
+- [ ] Testing suite
+- [ ] Example app
+
 ## License
 
 MIT
