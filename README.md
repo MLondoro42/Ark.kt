@@ -30,11 +30,23 @@ dependencies {
 
 ### Usage:
 
-All APIs are accessed using the `ApiManager`:
+All APIs are accessed using the `ApiManager`. Pass a node URL or ip address to initializer:
 
 ```kotlin
-val manager = ApiManager()
+val manager = ApiManager(url: "https://api.arknode.net/api/")
+
+// or 
+
+val manager = ApiManager((ipAddress: "78.229.106.139", port: 4001, ssl: false)
+
 ```
+
+You can also update the headers to include `nethash`, `port`, and `version`. 
+
+```kotlin
+manager.updateHeader(nethash: "#{VALID_NETHASH}", version: "1.0.1", port: 4001)
+
+``` 
 
 ### Account
 

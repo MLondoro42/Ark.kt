@@ -2,7 +2,9 @@ package io.arkk.arkk
 
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelError
+import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.github.kittinunf.fuel.core.response
+import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.getAs
@@ -23,7 +25,66 @@ public class ApiManager {
      * The base URL used to access the Ark API
      *
      */
-    private var baseURL = "https://api.arknode.net/api/"
+    public var baseURL : String = ""
+        private set
+
+
+    /**
+     *
+     * A valid ark-node nethash
+     *
+     *  Example: "6e84d08bd299ed97c212c886c98a57e36545c8f5d645ca7eeae63a8bd62d8988"
+     *
+     */
+    public var nodeNethash : String? = null
+        private set
+
+    /**
+     *
+     * A valid ark-node version
+     *
+     *  Example: "1.0.1"
+     *
+     */
+    public var nodeVersion : String? = null
+        private set
+
+    /**
+     *
+     * A valid server port
+     *
+     *  Example: 4001
+     *
+     */
+    private var nodePort : Int? = null
+        private set
+
+
+    /**
+     *
+     * Public constructor for the APIManagr Object
+     * Sets the base URL to the specifided URL
+     *
+     * Example URL: "https://api.arknode.net/api/"
+     *
+     */
+    constructor(url : String) {
+        updateBaseURL(url)
+        setNetworkPreferences()
+    }
+
+    /**
+     *
+     * Public constructor for the APIManagr Object
+     * Sets the base URL with a custom node address
+     *
+     * Example URL: "http://78.229.106.139:4001"
+     *
+     */
+    constructor(ipAddress: String, port: Int, ssl: Boolean) {
+        updateURL(ipAddress, port, ssl)
+        setNetworkPreferences()
+    }
 
     /**
      * Public accessor method for updating the base url
@@ -35,6 +96,7 @@ public class ApiManager {
      */
     public fun updateBaseURL(url: String) {
         baseURL = url
+        setNetworkPreferences()
     }
 
     /**
@@ -43,7 +105,7 @@ public class ApiManager {
      * Example URL: "http://78.229.106.139:4001"
      *
      * @param ipAddress ip address of the Ark node
-     * @param port Ark node port. Default production is `4001`
+     * @param port A valid ark-node version. Default production is `4001`
      * @param ssl Sets whether SSL should be used
      *
      */
@@ -53,6 +115,26 @@ public class ApiManager {
         } else {
             baseURL = "http://" + ipAddress + ":" + port
         }
+        setNetworkPreferences()
+    }
+
+    /**
+     * Public accessor method for updating the node headers
+     *
+     *  Example nethash: "6e84d08bd299ed97c212c886c98a57e36545c8f5d645ca7eeae63a8bd62d8988"
+     *  Example version: "1.0.1"
+     *  Example nethash: 4001
+     *
+     * @param ipAddress A valid ark-node nethash
+     * @param version A valid ark-node version. Default production is `1.0.1`
+     * @param port A valid server port. Default production is `4001`
+     *
+     */
+    public fun updateHeader(nethash: String, version: String, port: Int) {
+        nodeNethash = nethash
+        nodeVersion = version
+        nodePort    = port
+        FuelManager.instance.baseHeaders = mapOf(nethash to "nethash", version to "version", port.toString() to "port")
     }
 
     // Account Info
@@ -862,5 +944,9 @@ public class ApiManager {
             val (response, err) = result
             callback(response, err)
         }
+    }
+
+    private fun setNetworkPreferences() {
+        FuelManager.instance.basePath = baseURL
     }
 }
