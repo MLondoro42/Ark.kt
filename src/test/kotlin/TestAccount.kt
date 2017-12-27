@@ -15,6 +15,8 @@ class TestAccount {
 
     private lateinit var apiManager: ApiManager
 
+    
+
     @Before
     fun setUp() {
         apiManager = ApiManager("https://api.arknode.net/api/")
