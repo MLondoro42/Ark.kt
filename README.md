@@ -235,8 +235,7 @@ manager.getTicker { ticker, error ->
 - [X] ARK API endpoints to support Monitor app
 - [X] Ark Ticker support
 - [X] Transaction, vote, unvote creation
-- [X] Example app
-- [ ] Testing suite
+- [X] Testing suite
 
 ## License
 
