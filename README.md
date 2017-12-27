@@ -35,18 +35,18 @@ All APIs are accessed using the `ApiManager`. Pass a node URL or ip address to i
 ```kotlin
 val manager = ApiManager(url: "https://api.arknode.net/api/")
 
-// or 
+// or
 
 val manager = ApiManager((ipAddress: "78.229.106.139", port: 4001, ssl: false)
 
 ```
 
-You can also update the headers to include `nethash`, `port`, and `version`. 
+You can also update the headers to include `nethash`, `port`, and `version`.
 
 ```kotlin
 manager.updateHeader(nethash: "#{VALID_NETHASH}", version: "1.0.1", port: 4001)
 
-``` 
+```
 
 ### Account
 
@@ -235,8 +235,8 @@ manager.getTicker { ticker, error ->
 - [X] ARK API endpoints to support Monitor app
 - [X] Ark Ticker support
 - [X] Transaction, vote, unvote creation
+- [X] Example app
 - [ ] Testing suite
-- [ ] Example app
 
 ## License
 
@@ -251,4 +251,3 @@ Andrew Walz - andrewjwalz@gmail.com
 ## Special Thanks
 
 * ARK Community Fund
-
