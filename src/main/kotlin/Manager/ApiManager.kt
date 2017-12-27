@@ -56,7 +56,7 @@ public class ApiManager {
      *  Example: 4001
      *
      */
-    private var nodePort : Int? = null
+    public var nodePort : Int? = null
         private set
 
 
@@ -111,9 +111,9 @@ public class ApiManager {
      */
     public  fun updateURL(ipAddress: String, port: Int, ssl: Boolean) {
         if (ssl == true) {
-            baseURL = "https://" + ipAddress + ":" + port
+            baseURL = "https://" + ipAddress + ":" + port + "/api/"
         } else {
-            baseURL = "http://" + ipAddress + ":" + port
+            baseURL = "http://" + ipAddress + ":" + port  + "/api/"
         }
         setNetworkPreferences()
     }
@@ -155,7 +155,7 @@ public class ApiManager {
      * "u_multisignatures": []}
      *
      * @param address ip address of the Ark node
-     * @param callback The callback returned after the network request. Contains an optional Ark `Account` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional Ark `Account` and `FuelError`
      *
      */
     public fun getAccount(address: String, callback: (account: Account?, error: FuelError?) -> Unit) {
@@ -173,7 +173,7 @@ public class ApiManager {
      *
      * Example: balance": "6195626142833"
      * @param address ip address of the Ark node
-     * @param callback The callback returned after the network request. Contains an optional Ark balance Double` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional Ark balance Double` and `FuelError`
      *
      */
     public fun getBalance(address: String, callback: (account: Double?, error: FuelError?) -> Unit) {
@@ -203,7 +203,7 @@ public class ApiManager {
      * "productivity": 99.34}
      *
      * @param address ip address of the Ark node
-     * @param callback The callback returned after the network request. Contains an optional Ark `Delegate` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional Ark `Delegate` and `FuelError`
      *
      */
     public fun getVote(address: String, callback: (delegate: Delegate?, error: FuelError?) -> Unit) {
@@ -212,7 +212,14 @@ public class ApiManager {
 
         Fuel.get(url).responseObject(DelegatesResponse.Deserializer()) { _, _, result ->
             val (response, err) = result
-            callback(response?.delegates?.first(), err)
+
+            val votes : Int = if (response?.delegates != null) response.delegates.count() else 0
+
+            if (votes > 0) {
+                callback(response?.delegates?.first(), err)
+            } else {
+                callback(null, err)
+            }
         }
     }
 
@@ -221,7 +228,7 @@ public class ApiManager {
      *
      * Example: "publicKey": "03c5d32dedf5441b3aafb2e0c6ad3e5568bb0b3e822807b133e2276e014d830e3c"
      * @param address ip address of the Ark node
-     * @param callback The callback returned after the network request. Contains an optional Ark publicKey `String` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional Ark publicKey `String` and `FuelError`
      *
      */
     public fun getPublicKey(address: String, callback: (account: String?, error: FuelError?) -> Unit) {
@@ -258,7 +265,7 @@ public class ApiManager {
      * "totalForged": "200000000"
      *
      * @param blockID Id for an Ark Block
-     * @param callback The callback returned after the network request. Contains an optional Ark `Block` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional Ark `Block` and `FuelError`
      *
      */
     public fun getBlock(blockID: String, callback: (block: Block?, error: FuelError?) -> Unit) {
@@ -292,7 +299,7 @@ public class ApiManager {
      * "confirmations": 5,
      * "totalForged": "200000000"
      *
-     * @param callback The callback returned after the network request. Contains an optional array of Ark `Block` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional array of Ark `Block` and `FuelError`
      *
      */
     public fun getBlocks(callback: (blocks: Array<Block>?, error: FuelError?) -> Unit) {
@@ -329,16 +336,23 @@ public class ApiManager {
      * @param delegate Ark Delegate
      * @param limit Number of blocks returned. Maximum 51
      * @param offset Query paging offset
-     * @param callback The callback returned after the network request. Contains an optional array of Ark `Block` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional array of Ark `Block` and `FuelError`
      *
      */
     public fun getBlocks(delegate: Delegate, limit: Int, offset: Int, callback: (blocks: Array<Block>?, error: FuelError?) -> Unit) {
 
-        val url: String = baseURL + "blocks?generatorPublicKey=${delegate.publicKey}&limit=$limit&offset=$offset&orderBy=height:desc"
+        val url: String = baseURL + "blocks?limit=${limit}&offset=${offset}&generatorPublicKey=${delegate.publicKey}"
+
 
         Fuel.get(url).responseObject(BlocksResponse.Deserializer()) { _, _, result ->
             val (response, err) = result
-            callback(response?.blocks, err)
+            val blocks = response?.blocks
+
+            if (blocks != null) {
+                callback(blocks, err)
+            } else {
+                callback(null, err)
+            }
         }
     }
 
@@ -365,16 +379,22 @@ public class ApiManager {
      *
      * @param limit Number of blocks returned. Maximum 51
      * @param offset Query paging offset
-     * @param callback The callback returned after the network request. Contains an optional array of Ark `Block` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional array of Ark `Block` and `FuelError`
      *
      */
     public fun getBlocks(publicKey: String, limit: Int, offset: Int, callback: (blocks: Array<Block>?, error: FuelError?) -> Unit) {
 
-        val url: String = baseURL + "blocks?limit=$limit&offset=$offset&orderBy=height:desc"
+        val url: String = baseURL + "blocks?limit=${limit}&offset=${offset}&generatorPublicKey=${publicKey}"
 
         Fuel.get(url).responseObject(BlocksResponse.Deserializer()) { _, _, result ->
             val (response, err) = result
-            callback(response?.blocks, err)
+            val blocks = response?.blocks
+
+            if (blocks != null) {
+                callback(blocks, err)
+            } else {
+                callback(null, err)
+            }
         }
     }
 
@@ -399,7 +419,7 @@ public class ApiManager {
      * "confirmations": 5,
      * "totalForged": "200000000"
      *
-     * @param callback The callback returned after the network request. Contains an optional Ark `Block` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional Ark `Block` and `FuelError`
      *
      */
     public fun getLastBlock(callback: (block: Block?, error: FuelError?) -> Unit) {
@@ -430,7 +450,7 @@ public class ApiManager {
      * "productivity": 99.34}
      *
      * @param delegate Ark Delegate username
-     * @param callback The callback returned after the network request. Contains an optional Ark `Delegate` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional Ark `Delegate` and `FuelError`
      *
      */
     public fun getDelegate(delegate: String, callback: (delegate: Delegate?, error: FuelError?) -> Unit) {
@@ -457,7 +477,7 @@ public class ApiManager {
      * "approval": 1.18,
      * "productivity": 99.34}
      *
-     * @param callback The callback returned after the network request. Contains an optional array of Ark `Delegate` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional array of Ark `Delegate` and `FuelError`
      *
      */
     public fun getDelegates(callback: (delegate: Array<Delegate>?, error: FuelError?) -> Unit) {
@@ -485,7 +505,7 @@ public class ApiManager {
      * "approval": 1.18,
      * "productivity": 99.34}
      *
-     * @param callback The callback returned after the network request. Contains an optional array of Ark `Delegate` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional array of Ark `Delegate` and `FuelError`
      *
      */
     public fun getStandbyDelegates(callback: (delegate: Array<Delegate>?, error: FuelError?) -> Unit) {
@@ -514,7 +534,7 @@ public class ApiManager {
      *
      * @param limit Number of blocks returned. Maximum 50
      * @param offset Query paging offset
-     * @param callback The callback returned after the network request. Contains an optional array of Ark `Delegate` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional array of Ark `Delegate` and `FuelError`
      *
      */
     public fun getDelegates(limit: Int, offset: Int, callback: (delegate: Array<Delegate>?, error: FuelError?) -> Unit) {
@@ -537,7 +557,7 @@ public class ApiManager {
      * "balance": "22584166666735"}
      *
      * @param delegate Ark Delegate
-     * @param callback The callback returned after the network request. Contains an optional array of Ark `Voter` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional array of Ark `Voter` and `FuelError`
      *
      */
     public fun getVoters(delegate: Delegate, callback: (voters: Array<Voter>?, error: FuelError?) -> Unit) {
@@ -560,7 +580,7 @@ public class ApiManager {
      * "balance": "22584166666735"}
      *
      * @param publicKey Ark Delegate publicKey
-     * @param callback The callback returned after the network request. Contains an optional array of Ark `Voter` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional array of Ark `Voter` and `FuelError`
      *
      */
     public fun getVoters(publicKey: String, callback: (voters: Array<Voter>?, error: FuelError?) -> Unit) {
@@ -588,7 +608,7 @@ public class ApiManager {
      * "status": "OK",
      * "delay": 247}
      *
-     * @param callback The callback returned after the network request. Contains an optional array of Ark `Peer` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional array of Ark `Peer` and `FuelError`
      *
      */
     public fun getPeers(callback: (peers: Array<Peer>?, error: FuelError?) -> Unit) {
@@ -617,7 +637,7 @@ public class ApiManager {
      *
      * @param ip The Ark Peer IP address
      * @param port The Ark Peer port. Default for production is `4001`
-     * @param callback The callback returned after the network request. Contains an optional Ark `Peer` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional Ark `Peer` and `FuelError`
      *
      */
     public fun getPeer(ip: String, port: Int, callback: (peer: Peer?, error: FuelError?) -> Unit) {
@@ -638,7 +658,7 @@ public class ApiManager {
      * "version": "1.0.1",
      * "build": ""}
      *
-     * @param callback The callback returned after the network request. Contains an optional Ark `PeerVersion` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional Ark `PeerVersion` and `FuelError`
      *
      */
     public fun getPeerVersion(callback: (version: PeerVersion?, error: FuelError?) -> Unit) {
@@ -666,7 +686,7 @@ public class ApiManager {
      * "reward": 200000000,
      * "supply": 13014384400000000}
      *
-     * @param callback The callback returned after the network request. Contains an optional Ark `Status` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional Ark `Status` and `FuelError`
      *
      */
     public fun getSyncStatus(callback: (status: Status?, error: FuelError?) -> Unit) {
@@ -697,7 +717,7 @@ public class ApiManager {
      * "asset": {"votes": ["+0218b77efb312810c9a549e2cc658330fcc07f554d465673e08fa304fa59e67a0a"]},
      * "confirmations": 641728}
      *
-     * @param callback The callback returned after the network request. Contains an optional array of Ark `Transactions` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional array of Ark `Transactions` and `FuelError`
      *
      */
     public fun getTransactions(callback: (transactions: Array<ArkTransaction>?, error: FuelError?) -> Unit) {
@@ -729,7 +749,7 @@ public class ApiManager {
      *
      * @param limit Number of blocks returned. Maximum 50
      * @param offset Query paging offset
-     * @param callback The callback returned after the network request. Contains an optional array of Ark `Transactions` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional array of Ark `Transactions` and `FuelError`
      *
      */
     public fun getTransactions(limit: Int, offset: Int, callback: (transactions: Array<ArkTransaction>?, error: FuelError?) -> Unit) {
@@ -760,7 +780,7 @@ public class ApiManager {
      * "confirmations": 641728}
      *
      * @param transactionID Ark transaction ID
-     * @param callback The callback returned after the network request. Contains an optional Ark `Transactions` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional Ark `Transactions` and `FuelError`
      *
      */
     public fun getTransaction(transactionID: String, callback: (transaction: ArkTransaction?, error: FuelError?) -> Unit) {
@@ -791,7 +811,7 @@ public class ApiManager {
      * "confirmations": 641728}
      *
      *  @param address Ark Address
-     * @param callback The callback returned after the network request. Contains an optional array of Ark `Transactions` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional array of Ark `Transactions` and `FuelError`
      *
      */
     public fun getSentTransactions(address: String, callback: (transactions: Array<ArkTransaction>?, error: FuelError?) -> Unit) {
@@ -823,7 +843,7 @@ public class ApiManager {
      * "confirmations": 641728}
      *
      * @param address Ark Address
-     * @param callback The callback returned after the network request. Contains an optional array of Ark `Transactions` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional array of Ark `Transactions` and `FuelError`
      *
      */
     public fun getReceivedTransactions(address: String, callback: (transactions: Array<ArkTransaction>?, error: FuelError?) -> Unit) {
@@ -933,7 +953,7 @@ public class ApiManager {
      * "TWD": 88.45,
      * "USD": 3.05}
      *
-     * @param callback The callback returned after the network request. Contains an optional Ark `Ticker` and `FuelErrror`
+     * @param callback The callback returned after the network request. Contains an optional Ark `Ticker` and `FuelError`
      *
      */
     public fun getTicker(callback: (ticker: Ticker?, error: FuelError?) -> Unit) {
