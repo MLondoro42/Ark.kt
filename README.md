@@ -2,6 +2,12 @@
 
 An Ark-lite client written on Kotlin
 
+# Introduction
+
+<p align="center">
+    <a href="https://arkcommunity.fund/"><img src="https://arkcommunity.fund/media-kit/funded/banner.png" /></a>
+</p>
+
 ## Requirements
 
 * Kotlin 1.1.60
